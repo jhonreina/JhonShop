@@ -27,29 +27,57 @@ body {
 }
 
 nav {
-    background-color: #232f3e;
+    background-color: #212529;
     padding: 1rem 1rem;
 }
 
-#search_btn {
-    background-color: #febd69;
+img {
+    width: 100%;
+    width: 150px;
+    margin: auto;
 }
+
+.badge{
+    background-color: rgb(236, 239, 240);
+    border: 1px solid #FFFB00;
+}
+
+
+
+#search_btn {
+    background-color: #febd69;    
+}
+.btn {
+    padding: 0 10px;
+}
+
 
 .input-group {
     width: 90%;
     margin-right: 35%;
+    margin-top: 5px;
 }
 
-f #search_field {
+.encabezado{
+    margin-top: 100px;
+}
+
+#search_field {
     height: 2.4rem;
     padding: 1rem;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
 }
 
 #login_btn,
 #view_btn {
-    background-color: #febd69;
-    padding: 0.4rem 1.8rem;
-    font-family: calibri;
+    background-color: #FFFB00;   
+    font-family: 'Amazon Ember';  
+    font-weight: 300;
+    border: none;
 }
 
 #cart {
@@ -58,7 +86,7 @@ f #search_field {
 }
 
 #cart_count {
-    background-color: #febd69;
+    background-color: #FFFB00;
     padding: 0.2rem 0.5rem;
     border-radius: 0.2rem;
     color: black;
@@ -76,11 +104,14 @@ f #search_field {
 }
 
 .card-title a {
-    color: #2e2e2e;
+    color: #1e07e6;
+    font-size: 0.7em;
+    font-family:'Amazon Ember';
+    text-decoration: underline;
 }
 
 .card-title a:hover {
-    color: #fa9c23;
+    color: #fc1606;
     text-decoration: none;
 }
 
@@ -89,22 +120,24 @@ f #search_field {
 }
 
 .card-text {
-    font-size: 1.4rem;
+    font-size: 1rem;
+    font-family: 'Amazon Ember';
+    font-weight: 100;
 }
 
 #view_btn {
-    background-color: #fa9c23;
-    color: white;
+    background-color: #FFFB00;
+    color: black;
 }
-
+/* 
 .card-img-top {
     width: 200px;
     height: 150px;
-}
+} */
 
 .ratings {
     font-size: 1.2rem;
-    color: #fdcc0d;
+    color: #FFFB00;
 }
 
 #no_of_reviews {
@@ -122,12 +155,15 @@ footer {
 }
 
 /* Ratings */
-
+.rating{
+    text-align:left;
+}
 .rating-outer {
     display: inline-block;
-    position: relative;
+    position: relative;   
     font-family: FontAwesome;
-    color: #fdcc0d;
+    color: #ff0000;
+   
 }
 
 .rating-outer::before {
@@ -162,7 +198,7 @@ footer {
 #cart_btn,
 #review_btn {
     border-radius: 2rem;
-    background-color: #fa9c23;
+    background-color: #FFFB00;
     border: none;
     padding: 0.5rem 2rem;
 }
