@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../actions/productsActions';
 import { Link } from 'react-router-dom'
 import { useAlert } from 'react-alert';
+import CarouselsImg from './CarouselsImg';
+
 
 const Home = () => {
 
     const {loading, productos, error} = useSelector(state => state.products)
-    const alert = useAlert();
-  
+    const alert = useAlert(); 
     const dispatch = useDispatch();
+  
     useEffect(() => {
     if (error) {
       return alert.error(error)
@@ -26,8 +28,9 @@ const Home = () => {
         </i></h5>      
       ): (
         <Fragment>
-          <MetaData title="Todo a tu alcance"></MetaData>
-          <h1 id="encabezado_productos" className="encabezado text-center">
+            <MetaData title="Todo a tu alcance"></MetaData>
+            <CarouselsImg/>
+          <h1 id="encabezado_productos" className="mt-1 text-center">
             Ultimos Productos
           </h1>
           <section id="productos" className="container mt-2">
@@ -75,7 +78,7 @@ const Home = () => {
                               ${articulo.precio}
                             </p>
                             <Link
-                              to={`productos/${articulo._id}`}
+                              to={`producto/${articulo._id}`}
                               id="view_btn"
                               className="btn btn-block "
                             >
