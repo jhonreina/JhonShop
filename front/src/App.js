@@ -4,23 +4,25 @@ import React from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Home from './components/Home';
+import CarouselsImg from './components/CarouselsImg';
 import ProductDetails from './components/products/ProductDetails';
 // router traido desde react-router-dom no confundir con el de express
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <Router>    
+    <Router>
       <div className="App">
         <Header />
-        <div className='container container-fluid'>
+        <CarouselsImg />
+        <div className="container container-fluid">
           <Routes>
-            <Route path='/' element={<Home />}/>
-            <Route path='/Home' element={<Home />} />
-            <Route path='/producto/:id' element={< ProductDetails />}/>
+            <Route path="/" element={<Home />} />
+            <Route path="/Home" element={<Home />} />
+            <Route path="/producto/:id" element={<ProductDetails />} />
           </Routes>
         </div>
-           
+
         <Footer />
       </div>
     </Router>

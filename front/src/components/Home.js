@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../actions/productsActions';
 import { Link } from 'react-router-dom'
 import { useAlert } from 'react-alert';
-import CarouselsImg from './CarouselsImg';
+
 
 
 const Home = () => {
@@ -28,8 +28,7 @@ const Home = () => {
         </i></h5>      
       ): (
         <Fragment>
-            <MetaData title="Todo a tu alcance"></MetaData>
-            <CarouselsImg/>
+            <MetaData title="Todo a tu alcance"></MetaData>           
           <h1 id="encabezado_productos" className="mt-1 text-center">
             Ultimos Productos
           </h1>
