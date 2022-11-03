@@ -42,9 +42,15 @@ img {
     border: 1px solid #FFFB00;
 }
 
+.text-header{
+    font-family: 'Amazon Ember';
+    color: #FFFB00;
+    
+}
 
-
-
+.carousel{
+    width: 100%;
+}
 #search_btn {
     background-color: #febd69;    
 }
@@ -556,7 +562,7 @@ footer {
 #sidebar {
     min-width: 100%;
     max-width: 100%;
-    background: #232f3e;
+    background: #212529;
     color: #fff;
     transition: all 0.3s;
 }
@@ -567,7 +573,7 @@ footer {
 
 #sidebar .sidebar-header {
     padding: 20px;
-    background: #232f3e;
+    background: #212529;
 }
 
 #sidebar ul.components {
