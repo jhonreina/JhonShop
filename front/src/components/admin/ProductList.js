@@ -5,6 +5,7 @@ import { useAlert } from "react-alert";
 import MetaData from '../layout/MetaData';
 import Sidebar from './Sidebar';
 import { MDBDataTable } from 'mdbreact';
+import { Link } from 'react-router-dom';
 
 function ProductList() {
 
@@ -21,38 +22,58 @@ function ProductList() {
     
     const setProducts = () => {
         const data = {
-            columns: [
-                {
-                    label: "ID",
-                    field: "id",
-                    sort: "asc"
-                },
-                {
-                    label: "Nombre",
-                    field: "nombre",
-                    sort: "asc"
-                },
-                {
-                    label: "Precio",
-                    field: "precio",
-                    sort:"asc"
-                },
-                {
-                    label: "Inventario",
-                    field: "inventario",
-                    sort:   "asc"
-                },
-
-            ],
-            rows:[]
-        }
+          columns: [
+            {
+              label: "ID",
+              field: "id",
+              sort: "asc",
+            },
+            {
+              label: "Nombre",
+              field: "nombre",
+              sort: "asc",
+            },
+            {
+              label: "Precio",
+              field: "precio",
+              sort: "asc",
+            },
+            {
+              label: "Inventario",
+              field: "inventario",
+              sort: "asc",
+            },
+            {
+              label: "Acciones",
+              field: "actions",
+            },
+          ],
+          rows: [],
+        };
         productos.forEach(producto => {
             data.rows.push({
-                id: producto._id,
-                nombre: producto.nombre,
-                precio: `$${producto.precio}`,
-                inventario:producto.inventario
-            })
+              id: producto._id,
+              nombre: producto.nombre,
+              precio: `$${producto.precio}`,
+              inventario: producto.inventario,
+              actions: (
+                <Fragment>
+                  <Link
+                    to={`/producto/${producto._id}`}
+                    className="btn btn-primary py-1 px-2"
+                  >
+                    <i className="fa fa-eye"></i>
+                  </Link>
+                  <Link to="/" className="btn btn-warning py-1 px-2">
+                    <i class="fa fa-pencil"></i>
+                  </Link>
+
+                  <Link to="/" className="btn btn-danger py-1 px-2">
+                    <i className="fa fa-trash"></i>
+                  </Link>
+                </Fragment>
+              ),
+            });
         });
         return data;
     }
@@ -73,12 +94,12 @@ function ProductList() {
               </h5>
             ) : (
               <MDBDataTable
-                    data={setProducts()}
-                    className='px-3'
-                    bordered
-                    striped
-                    hover>
-              </MDBDataTable>
+                data={setProducts()}
+                className="px-3 table-responsive"
+                bordered
+                striped
+                hover
+              ></MDBDataTable>
             )}
           </Fragment>
         </div>
