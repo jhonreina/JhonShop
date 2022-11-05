@@ -85,7 +85,7 @@ function ProductList() {
         <div className="col-12 col-md-3">
           <Sidebar />
         </div>
-        <div className="col-12 col-md-9">
+        <div className="col-12 col-md-9 p-0">
           <Fragment>
             <h2 className="my-5">Productos Registrados</h2>
             {loading ? (

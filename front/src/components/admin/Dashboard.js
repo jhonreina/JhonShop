@@ -10,7 +10,7 @@ const Dashboard = () => {
         <div className="col-12 col-md-3">
           <Sidebar />
         </div>
-        <div className="col-12 col-md-9">
+        <div className="col-12 col-md-9 ps-0">
           <h2 className="my-4">Panel de control</h2>
           <Fragment>
             <MetaData title={"Panel de Control"}></MetaData>

@@ -1,7 +1,8 @@
 const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
 
 
 const usuarioSchema = new mongoose.Schema({
@@ -61,10 +62,22 @@ const usuarioSchema = new mongoose.Schema({
 
   //retornar un JWT token
 
-usuarioSchema.methods.getJwtToken = function () {
-    return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    usuarioSchema.methods.getJwtToken = function () {
+         return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
           expiresIn:process.env.JWT_TIEMPO_EXPIRACION
       })
-  }
+}   
+  
+ //Generar un token para resetiar la contraseña
+   usuarioSchema.methods.genResetPasswordToken =  function(){
+      const resetToken = crypto.randomBytes(20).toString('hex');  
+
+    //hashear y setear resetToken
+       this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest('hex');
+    //setear fecha de expiracion del token
+       this.resetPasswordExpire = Date.now() + 30 * 60 * 1000 //el token dura 30 minitos
+       
+       return resetToken
+ }
 
 module.exports=mongoose.model("auth",usuarioSchema)
