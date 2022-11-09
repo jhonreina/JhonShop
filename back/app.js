@@ -10,9 +10,11 @@ app.use(cookieParse());
 // importar rutas
 const productos = require("./routes/products");
 const usuarios = require("./routes/auth");
+const ordenes = require("./routes/orders");
 
 app.use('/api',productos) //sujeto a decision (ruta del nevegador)
 app.use('/api', usuarios) 
+app.use('/api', ordenes)
 
 // Middlewere para menejar errores
 app.use(errorMiddlewere)
