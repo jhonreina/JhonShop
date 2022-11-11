@@ -1,20 +1,32 @@
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const producto = require("../models/productos");
+const APIFeatures = require("../utils/apiFeatures");
 const ErrorHandler = require("../utils/errorHandler");
 const fetch = (url) =>import('node-fetch').then(({default:fetch}) => fetch (url)); //Usurpacion del require
 // ver la lista de productos
-exports.getProducts =catchAsyncErrors(async (req, res, next) => {
-    const productos = await producto.find();
-     if (!productos) {
-       return next(new ErrorHandler("Información no encontrada", 404));
-     }
+exports.getProducts = catchAsyncErrors(async (req, res, next) => {
+  
+  const resPerPage = 4;
+  const productsCount = await producto.countDocuments();
 
+  const apiFeatures = new APIFeatures(producto.find(), req.query)
+    .search()
+    .filter()
+  
+  let products = await apiFeatures.query;
+  let filteredProductsCount = products.length;
+  apiFeatures.pagination(resPerPage)
+  products = await apiFeatures.query.clone();
 
-    res.status(200).json({
-        success: true,
-        cantidad: productos.length,
-        productos
-    })
+  res.status(200).json({
+    success: true,
+    productsCount,
+    resPerPage,
+    filteredProductsCount,
+    products
+  })
+
+   
 })
 
 // ver producto por ID
@@ -76,9 +88,95 @@ exports.deleteProduct =catchAsyncErrors( async (req, res, next) => {
     })
 })
 
+//crear una review
+exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+  const { rating, comentario, idProducto } = req.body;
+
+  const opinion = {
+    nombreCliente: req.user.nombre,
+    rating: Number(rating),
+    comentario
+  }
+
+  const product = await producto.findById(idProducto);
+
+  const isReviewed = product.opiniones.find(
+    item => item.nombreCliente === req.user.nombre
+  )
+
+  if (isReviewed) {
+    product.opiniones.forEach((opinion) => {
+      if (opinion.nombreCliente === req.user.nombre) {
+         opinion.comentario = comentario,
+         opinion.rating = rating
+      }
+    })
+  } else {
+    product.opiniones.push(opinion)
+    product.numCalificacaiones = product.opiniones.length
+  }
+
+  product.calificacion = product.opiniones.reduce(
+    (acc, opinion) => opinion.rating + acc,
+    0 / product.opiniones.length
+  )
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+    message: "hemos opinado correctamente",
+  });
+});
+
+
+//ver las reviews de un producto
+exports.getProductReview = catchAsyncErrors(async (req, res, next) => {
+  const product = await producto.findById(req.query.id)
+
+  res.status(200).json({
+    success: true,
+    opiniones:product.opiniones
+  })
+})
+
+
+//eliminar review
+exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
+  const product = await producto.findById(req.query.idProducto);
+
+  const opiniones = product.opiniones.filter(
+    (opinion) => opinion._id.toString() !== req.query.idReview.toString()
+  );
+
+  const numCalificacaiones = opiniones.length;
+
+  const calificacion =
+    product.opiniones.reduce((acc, Opinion) => Opinion.rating + acc, 0) /
+    opiniones.length;
+
+  await producto.findByIdAndUpdate(
+    req.query.idProducto,
+    {
+      opiniones,
+      calificacion,
+      numCalificacaiones,
+    },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "review eliminada correctamente",
+  });
+});
 
 // HABLEMOS DE FETCH
-// ver todos los priductos
+// ver todos los productos
 function verProductos(params) {
     fetch('http://localhost:4000/api/productos')
     .then(res=>res.json())

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 function ProductList() {
 
-        const {loading, productos, error} = useSelector(state => state.products)
+        const {loading, products, error} = useSelector(state => state.products)
         const alert = useAlert(); 
         const dispatch = useDispatch();
     
@@ -18,7 +18,7 @@ function ProductList() {
         return alert.error(error)
         }
         dispatch(getProducts());       
-        }, [dispatch]);
+        }, [dispatch, alert, error]);
     
     const setProducts = () => {
         const data = {
@@ -50,7 +50,7 @@ function ProductList() {
           ],
           rows: [],
         };
-        productos.forEach(producto => {
+        products.forEach(producto => {
             data.rows.push({
               id: producto._id,
               nombre: producto.nombre,

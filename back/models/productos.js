@@ -61,7 +61,7 @@ const productsSchema = mongoose.Schema({
         type: Number,
         default:0
     },
-    opinines: [
+    opiniones: [
         {
             nombreCliente: {
                 type: String,

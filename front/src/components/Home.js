@@ -1,26 +1,36 @@
-import React, { Fragment, useEffect } from 'react'
-import MetaData from './layout/MetaData';
-import { useDispatch, useSelector } from 'react-redux';
-import { getProducts } from '../actions/productsActions';
-import { Link } from 'react-router-dom'
-import { useAlert } from 'react-alert';
+import React, { Fragment, useEffect, useState } from "react";
+import MetaData from "./layout/MetaData";
+import { useDispatch, useSelector } from "react-redux";
+import { getProducts } from "../actions/productsActions";
+import { Link, useParams } from "react-router-dom";
+import { useAlert } from "react-alert";
 import CarouselsImg from "../components/CarouselsImg";
-
-
-
+import Pagination from "react-js-pagination";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 const Home = () => {
+  const params = useParams();
+  const keyword = params.keyword;
+  const [precio, setPrecio] = useState([100000, 400000]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { loading, products, error, resPerPage, productsCount } = useSelector(
+    (state) => state.products
+  );
+  const alert = useAlert();
 
-    const {loading, productos, error} = useSelector(state => state.products)
-    const alert = useAlert(); 
-    const dispatch = useDispatch();
-  
-    useEffect(() => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
     if (error) {
-      return alert.error(error)
+      return alert.error(error);
     }
-    dispatch(getProducts());   
-  }, [dispatch]);
+    dispatch(getProducts(currentPage, keyword, precio));
+  }, [dispatch, alert, error, currentPage, keyword, precio]);
+
+  function setCurrentPageNo(pageNumber) {
+    setCurrentPage(pageNumber);
+  }
 
   return (
     <Fragment>
@@ -38,8 +48,8 @@ const Home = () => {
           </h1>
           <section id="productos" className="container mt-2">
             <div className="row">
-              {productos &&
-                productos.map((articulo) => (
+              {products &&
+                products.map((articulo) => (
                   <div
                     key={articulo._id}
                     className="col-12 col-md-6 col-lg-3 my-2"
@@ -85,11 +95,48 @@ const Home = () => {
                   </div>
                 ))}
             </div>
+            <br></br>
+            <div className="col-5 d-flex mx-auto">
+              <Slider
+                range
+                railStyle={{ backgroundColor: 'yellow'}}
+                className="t-slider"
+                marks={{
+                  100000: `$100000`,
+                  400000: `$400000`,
+                }}
+                min={100000}
+                max={400000}
+                defaultValue={[100000, 400000]}
+                tipFormatter={(value) => `$${value}`}
+                tipProps={{
+                  placement: "top",
+                  prefixCls: "rc-slider-tooltip",
+                  visible: true,
+                }}
+                value={precio}
+                onChange={(precio) => setPrecio(precio)}
+              ></Slider>
+            </div>
           </section>
+          <div className="d-flex justify-content-center mt-5">
+            <Pagination
+              activePage={currentPage}
+              itemsCountPerPage={resPerPage}
+              totalItemsCount={productsCount}
+              onChange={setCurrentPageNo}
+              nextPageText={"Siguiente"}
+              prevPageText={"Anterior"}
+              firstPageText={"Primera"}
+              lastPageText={"Ultima"}
+              itemClass="page-item"
+              linkClass="page-link"
+            ></Pagination>
+          </div>
         </Fragment>
       )}
     </Fragment>
   );
-}
+};
 
-export default Home
+export default Home;
