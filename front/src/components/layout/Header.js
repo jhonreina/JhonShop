@@ -24,6 +24,10 @@ const Header = () => {
             {/*AQUI VA BUSCAR*/}
             <Search/>
           </div>
+          <div className="col-12 col-md-6 col-lg-1 text-center ">
+          <Link to="/login" className="btn"id='login_btn'>Login
+          </Link>
+          </div>
           <div className="col-12 col-md-6 col-lg-2 p-0 mt-0 d-flex justify-content-center">
             <div className="mt-2 dropdown">
               <Link
@@ -53,7 +57,7 @@ const Header = () => {
               </div>
             </div>
           </div>
-          <div className="col-12 col-md-6 col-lg-2 d-flex justify-content-center">
+          <div className="col-12 col-md-6 col-lg-1 d-flex justify-content-center">
             <Link to="/carrito" className="d-flex">
               <i
                 class="fa fa-shopping-cart fa-2x text-white"
