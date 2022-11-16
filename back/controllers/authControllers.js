@@ -4,7 +4,7 @@ const catchAsyncErrors=require("../middleware/catchAsyncErrors");
 const tokenEnviado = require("../utils/jwtToken");
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
-const { assert } = require("console");
+const cloudinary=require("cloudinary")
 
 
 // Registrar nuevo usuario /api/usuario/registro
@@ -12,13 +12,20 @@ const { assert } = require("console");
 exports.registroUsuario = catchAsyncErrors(async(req, res, next)=> {
     const { nombre, email, password } = req.body;
     
+    const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 240,
+        crop:"scale"
+        
+    })
+
     const user = await User.create({
         nombre,
         email,
         password,
         avatar: {
-            public_id:"ANd9GcQnoVvrZEmOjmzb9jLY3n4F-9bvUa4p2745sQ&usqp",
-            url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnoVvrZEmOjmzb9jLY3n4F-9bvUa4p2745sQ&usqp=CAU"
+            public_id:result.public_id,
+            url:result.secure_url       
         }  
     })
 
@@ -78,7 +85,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
     await user.save({ validateBeforeSave: false })
     
     //crear una url para hacer el reset de la contraseña
-    const resetUrl = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`;
+    const resetUrl = `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`;
 
     const mensaje = `Hola!\n\nTu link para ajustar una nueva contraseña es: \n\n${resetUrl}\n\n si no lo solicitaste este link, por favor comunicate con soporte.\n\n att:\nJhonShop Store`
     
@@ -162,7 +169,22 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
         email:req.body.email
     }
 
-    //update avatar:pendiente
+    //update avatar
+    if (req.body.avatar!=="") {
+        const user = await User.findById(req.user.id)
+        const image_id = user.avatar.public_id;
+        const res = await cloudinary.v2.upload.destroy(image_id);
+
+        const result = await cloudinary.v2.uploader.upload(req, body.avatar, {
+            folder: "avatars",
+            width: 240,
+            crop:"scale"
+        })
+        newUserData.avatar = {
+            public_id: result.public_id,
+            url:result.secure_url
+        }
+    }
 
     const user = await User.findByIdAndUpdate(req.user.id, newData, {
         new: true,

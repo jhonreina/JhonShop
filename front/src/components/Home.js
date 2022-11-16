@@ -39,7 +39,7 @@ const Home = () => {
         <h5>
           Cargando...<i class="fa fa-cog fa-spin fa-3x fa-fw loading"></i>
         </h5>
-      ) : (
+       ) : (
         <Fragment>
           <MetaData title="Todo a tu alcance"></MetaData>
 
