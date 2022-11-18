@@ -47,9 +47,13 @@ const productsSchema = mongoose.Schema({
             ]
         }
     },
-    vendedor: {
+    genero: {
         type: String,
-        required:[true,"Por favor registre el vendedor del producto"]
+        required:[true,"Por favor registre el genero"]
+    },
+    talla: {
+        type:String,
+        required:[true,"Por favor registre la talla"]
     },
     inventario: {
         type: Number,

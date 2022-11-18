@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { clearErrors, getProductDetails } from '../../actions/productsActions';
 import { useAlert } from "react-alert";
 import { Carousel } from 'react-bootstrap'
+import { addItemToCart } from '../../actions/cartActions';
 
 const ProductDetails = () => {
   const { loading, product, error } = useSelector(
@@ -42,6 +43,10 @@ const ProductDetails = () => {
 
   }
 
+  const addToCart = () => {
+    dispatch(addItemToCart(id, quantity));
+    alert.success("Producto agregado al carrito");
+  };
   return (
     <Fragment>
       {loading ? (
@@ -62,7 +67,7 @@ const ProductDetails = () => {
                     <Carousel.Item key={img.public_id}>
                       <img
                         className="d-block w-100"
-                        src={"../" + img.url}
+                        src={img.url}
                         alt={product.nombre}
                       ></img>
                     </Carousel.Item>
@@ -101,6 +106,7 @@ const ProductDetails = () => {
                 id="carrito_btn"
                 className="btn btn-primary bg-warning ml-4"
                 disabled={product.inventario === 0}
+                onClick={addToCart}
               >
                 Agregar al carrito
               </button>
@@ -118,8 +124,8 @@ const ProductDetails = () => {
               <h4 className="mt-2">Descripción:</h4>
               <p>{product.descripcion}</p>
               <hr />
-              <p id="vendedor">
-                Vendido por: <strong>{product.vendedor}</strong>
+              <p id="genero">
+                Genero: <strong>{product.genero}</strong>
               </p>
               <button
                 id="btn-review"

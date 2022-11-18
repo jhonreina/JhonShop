@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../actions/productsActions";
+import { clearErrors, getAdminProducts } from "../../actions/productsActions";
 import { useAlert } from "react-alert";
 import MetaData from '../layout/MetaData';
 import Sidebar from './Sidebar';
@@ -13,12 +13,14 @@ function ProductList() {
         const alert = useAlert(); 
         const dispatch = useDispatch();
     
-        useEffect(() => {
-        if (error) {
-        return alert.error(error)
-        }
-        dispatch(getProducts());       
-        }, [dispatch, alert, error]);
+         useEffect(() => {
+           dispatch(getAdminProducts());
+
+           if (error) {
+             alert.error(error);
+             dispatch(clearErrors());
+           }
+         }, [dispatch, alert, error]);
     
     const setProducts = () => {
         const data = {

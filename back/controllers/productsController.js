@@ -2,20 +2,21 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const producto = require("../models/productos");
 const APIFeatures = require("../utils/apiFeatures");
 const ErrorHandler = require("../utils/errorHandler");
-const fetch = (url) =>import('node-fetch').then(({default:fetch}) => fetch (url)); //Usurpacion del require
+const fetch = (url) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(url)); //Usurpacion del require
+const cloudinary = require("cloudinary");
 // ver la lista de productos
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
-  
   const resPerPage = 4;
   const productsCount = await producto.countDocuments();
 
   const apiFeatures = new APIFeatures(producto.find(), req.query)
     .search()
-    .filter()
-  
+    .filter();
+
   let products = await apiFeatures.query;
   let filteredProductsCount = products.length;
-  apiFeatures.pagination(resPerPage)
+  apiFeatures.pagination(resPerPage);
   products = await apiFeatures.query.clone();
 
   res.status(200).json({
@@ -23,11 +24,9 @@ exports.getProducts = catchAsyncErrors(async (req, res, next) => {
     productsCount,
     resPerPage,
     filteredProductsCount,
-    products
-  })
-
-   
-})
+    products,
+  });
+});
 
 // ver producto por ID
 exports.getProductById = catchAsyncErrors(async (req, res, next) => {
@@ -44,49 +43,69 @@ exports.getProductById = catchAsyncErrors(async (req, res, next) => {
 });
 // update un producto
 exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
-    let product = await producto.findById(req.params.id);//variable de tipo modificable
-     if (!product) {
-       return next(new ErrorHandler("Producto no encontrado", 404));
-     }
-    // si el objeto si existe ejecuto la actulizacion
-        product = await producto.findByIdAndUpdate(req.params.id, req.body, {
-        new: true, //valida solo los atributos nuevos o actualizados
-        runValidators: true,        
-    });
-    // responde ok si el objeto se actualizo
-    res.status(200).json({
-        success: true,
-        massage: "Producto actualizado correctamente",
-        product
-    })
-})
+  let product = await producto.findById(req.params.id); //variable de tipo modificable
+  if (!product) {
+    return next(new ErrorHandler("Producto no encontrado", 404));
+  }
+  // si el objeto si existe ejecuto la actulizacion
+  product = await producto.findByIdAndUpdate(req.params.id, req.body, {
+    new: true, //valida solo los atributos nuevos o actualizados
+    runValidators: true,
+  });
+  // responde ok si el objeto se actualizo
+  res.status(200).json({
+    success: true,
+    massage: "Producto actualizado correctamente",
+    product,
+  });
+});
 
-// crear nuevo producto /api/prodcutos
+// crear nuevo producto /api/productos
 exports.newProduct = catchAsyncErrors(async (req, res, next) => {
+  let imagen = [];
+  if (typeof req.body.imagen === "string") {
+    imagen.push(req.body.imagen);
+  } else {
+    imagen = req.body.imagen;
+  }
 
-    req.body.user = req.user.id;
-    const product = await producto.create(req.body);
-    res.status(201).json({
-        success: true,
-        product
-    })    
-})
+  let imagenLink = [];
 
+  for (let i = 0; i < imagen.length; i++) {
+    const result = await cloudinary.v2.uploader.upload(imagen[i], {
+      folder: "products",
+    });
+
+    imagenLink.push({
+      public_id: result.public_id,
+      url: result.secure_url,
+    });
+  }
+
+  req.body.imagen = imagenLink;
+
+  req.body.user = req.user.id;
+  const product = await producto.create(req.body);
+  res.status(201).json({
+    success: true,
+    product,
+  });
+});
 
 //ELliminar producto
 
-exports.deleteProduct =catchAsyncErrors( async (req, res, next) => {
-    const product = await producto.findById(req.params.id);
-    if (!product) {
-      return next(new ErrorHandler("Producto no encontrado", 404));
-    }
+exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
+  const product = await producto.findById(req.params.id);
+  if (!product) {
+    return next(new ErrorHandler("Producto no encontrado", 404));
+  }
 
-    await product.remove();//eliminamos el objeto
-    res.status(200).json({
-        success: true,
-        message:"Producto eliminado correctamente"
-    })
-})
+  await product.remove(); //eliminamos el objeto
+  res.status(200).json({
+    success: true,
+    message: "Producto eliminado correctamente",
+  });
+});
 
 //crear una review
 exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
@@ -95,31 +114,30 @@ exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
   const opinion = {
     nombreCliente: req.user.nombre,
     rating: Number(rating),
-    comentario
-  }
+    comentario,
+  };
 
   const product = await producto.findById(idProducto);
 
   const isReviewed = product.opiniones.find(
-    item => item.nombreCliente === req.user.nombre
-  )
+    (item) => item.nombreCliente === req.user.nombre
+  );
 
   if (isReviewed) {
     product.opiniones.forEach((opinion) => {
       if (opinion.nombreCliente === req.user.nombre) {
-         opinion.comentario = comentario,
-         opinion.rating = rating
+        (opinion.comentario = comentario), (opinion.rating = rating);
       }
-    })
+    });
   } else {
-    product.opiniones.push(opinion)
-    product.numCalificacaiones = product.opiniones.length
+    product.opiniones.push(opinion);
+    product.numCalificacaiones = product.opiniones.length;
   }
 
   product.calificacion = product.opiniones.reduce(
     (acc, opinion) => opinion.rating + acc,
     0 / product.opiniones.length
-  )
+  );
 
   await product.save({ validateBeforeSave: false });
 
@@ -129,17 +147,15 @@ exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
 //ver las reviews de un producto
 exports.getProductReview = catchAsyncErrors(async (req, res, next) => {
-  const product = await producto.findById(req.query.id)
+  const product = await producto.findById(req.query.id);
 
   res.status(200).json({
     success: true,
-    opiniones:product.opiniones
-  })
-})
-
+    opiniones: product.opiniones,
+  });
+});
 
 //eliminar review
 exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
@@ -152,8 +168,7 @@ exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
   const numCalificacaiones = opi.length;
 
   const calificacion =
-    opi.reduce((acc, Opinion) => Opinion.rating + acc, 0) /
-    opi.length;
+    opi.reduce((acc, Opinion) => Opinion.rating + acc, 0) / opi.length;
 
   await producto.findByIdAndUpdate(
     req.query.idProducto,
@@ -175,22 +190,29 @@ exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+// ver la lista de productos (admin)
+exports.getAdminProducts = catchAsyncErrors(async (req, res, next) => {
+  const products = await producto.find();
+
+  res.status(200).json({
+    products,
+  });
+});
 // HABLEMOS DE FETCH
 // ver todos los productos
 function verProductos(params) {
-    fetch('http://localhost:4000/api/productos')
-    .then(res=>res.json())
-    .then(res=>console.log (res))
-     .catch(err=>console.log(err))
+  fetch("http://localhost:4000/api/productos")
+    .then((res) => res.json())
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
 }
 
 // verProductos(); llamamos el metodo creado para probar consulta
 
-
 // ver por id
 
 function idProductos(id) {
-  fetch("http://localhost:4000/api/producto/"+id)
+  fetch("http://localhost:4000/api/producto/" + id)
     .then((res) => res.json())
     .then((res) => console.log(res))
     .catch((err) => console.log(err));

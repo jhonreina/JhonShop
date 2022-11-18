@@ -6,6 +6,7 @@ import Search from "./Search";
 import { logout } from "../../actions/userActions"
 
 const Header = () => {
+  const {cartItems}=useSelector(state=>state.cart)
   const alert = useAlert();
   const dispatch = useDispatch();
 
@@ -42,7 +43,7 @@ const Header = () => {
                 aria-hidden="false"
               ></i>
               <span className="ml-1 m-1" id="cart_count">
-                2
+                {cartItems.length}
               </span>
             </Link>
           </div>
