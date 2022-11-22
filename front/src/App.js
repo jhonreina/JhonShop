@@ -21,6 +21,11 @@ import UpdateProfile from './components/user/UpdateProfile';
 import UpdatePassword from './components/user/UpdatePassword';
 import ForgotPassword from './components/user/ForgotPassword';
 import  NewPassword  from './components/user/NewPassword';
+import UpdateProduct from './components/admin/UpdateProduct';
+import Shipping from './components/cart/Shipping';
+import ConfimOrder from './components/cart/ConfimOrder';
+import Payment from './components/cart/Payment';
+import { Success } from './components/cart/Success';
 
   
 function App() {
@@ -54,6 +59,46 @@ function App() {
               element={
                 <ProtectedRoutes isAdmin={true}>
                   <Dashboard />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/updateProduct/:id"
+              element={
+                <ProtectedRoutes isAdmin={true}>
+                  <UpdateProduct />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/shipping"
+              element={
+                <ProtectedRoutes>
+                  <Shipping />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/order/confirm"
+              element={
+                <ProtectedRoutes>
+                  <ConfimOrder />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/payment"
+              element={
+                <ProtectedRoutes>
+                  <Payment />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/success"
+              element={
+                <ProtectedRoutes>
+                  <Success />
                 </ProtectedRoutes>
               }
             />

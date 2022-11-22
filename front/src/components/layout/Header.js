@@ -39,7 +39,7 @@ const Header = () => {
           <div className="col-12 col-md-6 col-lg-1 mt-2 d-flex justify-content-center">
             <Link to="/carrito" className="d-flex">
               <i
-                class="fa fa-shopping-cart fa-2x text-white"
+                class="fa fa-shopping-cart fa-2x carrito"
                 aria-hidden="false"
               ></i>
               <span className="ml-1 m-1" id="cart_count">
@@ -59,12 +59,12 @@ const Header = () => {
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <span>{user && user.nombre}</span>
+                  <span className="text-secondary">{user && user.nombre}</span>
                   <figure className="avatar avatar-nav">
                     <img
                       src={user.avatar && user.avatar.url}
                       alt={user && user.nombre}
-                      className="rounded-circle mx-2"
+                      className="rounded-circle mx-2 "
                     ></img>
                   </figure>
                 </Link>

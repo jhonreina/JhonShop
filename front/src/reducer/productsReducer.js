@@ -1,4 +1,4 @@
-import { ALL_PRODUCTS_FAILED, ALL_PRODUCTS_SUCCESS, ALL_PRODUCTS_REQUEST, CLEAR_ERRORS,PRODUCT_DETAILS_FAILED,PRODUCT_DETAILS_SUCCESS,PRODUCT_DETAILS_REQUEST, ADMIN_PRODUCTS_REQUEST, ADMIN_PRODUCTS_SUCCESS, ADMIN_PRODUCTS_FAIL, NEW_PRODUCT_REQUEST, NEW_PRODUCT_SUCCESS, NEW_PRODUCT_RESET, NEW_PRODUCT_FAIL} from "../constants/productConstans";
+import { ALL_PRODUCTS_FAILED, ALL_PRODUCTS_SUCCESS, ALL_PRODUCTS_REQUEST, CLEAR_ERRORS,PRODUCT_DETAILS_FAILED,PRODUCT_DETAILS_SUCCESS,PRODUCT_DETAILS_REQUEST, ADMIN_PRODUCTS_REQUEST, ADMIN_PRODUCTS_SUCCESS, ADMIN_PRODUCTS_FAIL, NEW_PRODUCT_REQUEST, NEW_PRODUCT_SUCCESS, NEW_PRODUCT_RESET, NEW_PRODUCT_FAIL, DELATE_PRODUCT_REQUEST, DELATE_PRODUCT_SUCCESS, DELATE_PRODUCT_FAIL, UPDATE_PRODUCT_REQUEST, UPDATE_PRODUCT_SUCCESS, UPDATE_PRODUCT_FAIL, UPDATE_PRODUCT_RESET} from "../constants/productConstans";
 
 
 //VER PRODUCTOS
@@ -87,7 +87,7 @@ export const productsDetailsReducer= (state = { product: {}}, action) => {
           
     }
 }
-
+//CREAR NUEVO PRODCUTO
 export const newProductReducer = (state = { product: {} }, action )=> {
     switch (action.type) {
         case NEW_PRODUCT_REQUEST:
@@ -120,5 +120,47 @@ export const newProductReducer = (state = { product: {} }, action )=> {
          default:
             return state;
           
+    }
+}
+
+//ELIMINAR PRODUCTO Y EDITAR
+export const productReducer = (state = {}, action) => {
+    switch (action.type) {
+        case DELATE_PRODUCT_REQUEST:
+        case UPDATE_PRODUCT_REQUEST:
+            return {
+                ...state,
+                loading: true
+            }
+        case DELATE_PRODUCT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isDeleted: action.payload
+            }
+        case UPDATE_PRODUCT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isUpdated:action.payload
+            }
+        case DELATE_PRODUCT_FAIL:
+        case UPDATE_PRODUCT_FAIL:
+            return {
+                ...state,
+                error: action.payload
+            }
+        case UPDATE_PRODUCT_RESET:
+            return {
+                ...state,
+                isUpdate:false
+            }
+        case CLEAR_ERRORS:
+            return {
+                error:null
+            }
+        default:
+            return state
+        
     }
 }

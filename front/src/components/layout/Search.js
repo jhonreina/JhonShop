@@ -18,7 +18,7 @@ const Search = () => {
     }
   return (
     <form onSubmit={searchHandler}>
-      <div class="input-group mx-auto">
+      <div class="input-group mx-auto text-secondary">
         <input
           type="text"
           id="search_field"
@@ -29,7 +29,7 @@ const Search = () => {
         <div class="input-group-append">
           <button id="search-btn" class="btn">
             <i
-              class="fa fa-search text-white fa-1x"
+              className="fa fa-search-plus"
               aria-hidden="true"
             ></i>
           </button>

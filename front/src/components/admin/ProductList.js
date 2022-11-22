@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, getAdminProducts } from "../../actions/productsActions";
+import { clearErrors, delateProduct, getAdminProducts } from "../../actions/productsActions";
 import { useAlert } from "react-alert";
 import MetaData from '../layout/MetaData';
 import Sidebar from './Sidebar';
@@ -13,6 +13,16 @@ function ProductList() {
         const alert = useAlert(); 
         const dispatch = useDispatch();
     
+        const deleteProductHandler = (id) => {
+        const response = window.confirm("Esta seguro de querer borrar este producto")
+
+          if (response) {
+            dispatch(delateProduct(id))
+            alert.success("Producto eliminado con exito")
+            window.location.reload(false)
+        }
+        }  
+
          useEffect(() => {
            dispatch(getAdminProducts());
 
@@ -66,13 +76,16 @@ function ProductList() {
                   >
                     <i className="fa fa-eye"></i>
                   </Link>
-                  <Link to="/" className="btn btn-warning py-1 px-2">
+                  <Link to={`/updateProduct/${producto._id}`} className="btn btn-warning py-1 px-2">
                     <i class="fa fa-pencil"></i>
                   </Link>
 
-                  <Link to="/" className="btn btn-danger py-1 px-2">
+                  <button
+                    className="btn btn-danger py-1 px-2 ml-2"
+                    onClick={() => deleteProductHandler(producto._id)}
+                  >
                     <i className="fa fa-trash"></i>
-                  </Link>
+                  </button>
                 </Fragment>
               ),
             });
