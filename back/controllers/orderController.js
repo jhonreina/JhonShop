@@ -77,15 +77,22 @@ exports.allOrders = catchAsyncErrors(async (req, res, next) => {
 
 //EDITAR UN PEDIDO ADMIN
 exports.updateOrder = catchAsyncErrors(async (req, res, next) => {
-  const order = await Order.findById(req.params.id)
-  
+  const order = await Order.findById(req.params.id);
+
   if (!order) {
-    return next(new ErrorHandler("Orden no encontrada",404))
+    return next(new ErrorHandler("Orden no encontrada", 404));
   }
-  if (order.estado==="Enviado") {
-    return next(new ErrorHandler("Esta orden ya fue enviada",404))
+  if (order.estado === "Enviado") {
+    return next(new ErrorHandler("Esta orden ya fue enviada", 404));
   }
 
+  //Restamos del inventario
+  if (req.body.estado !== "Procesando") {
+    order.items.forEach(async (item) => {
+      await updateStock(item.producto, item.cantidad);
+    });
+  }
+  
   order.estado = req.body.estado;
   order.fechaEnvio = Date.now();
 
@@ -93,8 +100,8 @@ exports.updateOrder = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    order
-  })
+    order,
+  });
 })
 
 async function updateStock(id, quantity) {

@@ -132,7 +132,7 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-//crear una review
+//crear o actualizar una review
 exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
   const { rating, comentario, idProducto } = req.body;
 
@@ -161,8 +161,8 @@ exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
 
   product.calificacion = product.opiniones.reduce(
     (acc, opinion) => opinion.rating + acc,
-    0 / product.opiniones.length
-  );
+    0) / product.opiniones.length
+  
 
   await product.save({ validateBeforeSave: false });
 

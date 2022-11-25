@@ -76,7 +76,7 @@ const Header = () => {
                       Admin. Productos{" "}
                     </Link>
                   )}
-                  <Link className="dropdown-item" to="/">
+                  <Link className="dropdown-item" to="/myOrders">
                     Pedidos
                   </Link>
                   <Link className="dropdown-item" to="/userLogin">

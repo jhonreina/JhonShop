@@ -119,7 +119,7 @@ const Home = () => {
               ></Slider>
             </div>
           </section>
-          <div className="d-flex justify-content-center mt-5">
+          <div className="d-flex justify-content-center mt-5 btn-black">
             <Pagination
               activePage={currentPage}
               itemsCountPerPage={resPerPage}
@@ -130,7 +130,8 @@ const Home = () => {
               firstPageText={"Primera"}
               lastPageText={"Ultima"}
               itemClass="page-item"
-              linkClass="page-link"
+                linkClass="page-link"
+                className="paginacion"
             ></Pagination>
           </div>
         </Fragment>

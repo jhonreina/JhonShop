@@ -1,66 +1,133 @@
-import React, { Fragment, useState } from 'react'
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import MetaData from '../layout/MetaData';
-import { useParams } from 'react-router-dom';
-import { clearErrors, getProductDetails } from '../../actions/productsActions';
+import React, { Fragment, useState, useEffect } from "react";
+import { Carousel } from "react-bootstrap";
+import MetaData from "../layout/MetaData";
+import { useParams } from "react-router-dom";
 import { useAlert } from "react-alert";
-import { Carousel } from 'react-bootstrap'
-import { addItemToCart } from '../../actions/cartActions';
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getProductDetails,
+  newReview,
+  clearErrors,
+} from "../../actions/productsActions";
+import { addItemToCart } from "../../actions/cartActions";
+import { NEW_REVIEW_RESET } from "../../constants/productConstans";
+import ListReviews from "../order/ListReviews";
 
-const ProductDetails = () => {
-  const { loading, product, error } = useSelector(
-    (state) => state.productDetails
-  );
-  const { id } = useParams();
+export const ProductDetails = () => {
+  const params = useParams();
+  const [quantity, setQuantity] = useState(1);
+  const [rating, setRating] = useState(0);
+  const [comentario, setComentario] = useState("");
+
   const dispatch = useDispatch();
   const alert = useAlert();
-  const [quantity, setQuantity]= useState(1)
+
+  const { loading, error, product } = useSelector(
+    (state) => state.productDetails
+  );
+  const { user } = useSelector((state) => state.auth);
+  const { error: reviewError, success } = useSelector(
+    (state) => state.newReview
+  );
 
   useEffect(() => {
-    dispatch(getProductDetails(id));
+    dispatch(getProductDetails(params.id));
+
     if (error) {
       alert.error(error);
       dispatch(clearErrors());
     }
-  }, [dispatch, alert, error, id]);
+
+    if (reviewError) {
+      alert.error(reviewError);
+      dispatch(clearErrors());
+    }
+
+    if (success) {
+      alert.success("Opinion registrada correctamente");
+      dispatch({ type: NEW_REVIEW_RESET });
+    }
+  }, [dispatch, alert, error, reviewError, params.id, success]);
 
   const increaseQty = () => {
-    const contador = document.querySelector('.count')
-    if (contador.valueAsNumber >= product.inventario) return; 
+    const contador = document.querySelector(".count");
+
+    if (contador.valueAsNumber >= product.inventario) return;
 
     const qty = contador.valueAsNumber + 1;
-    setQuantity(qty)
-      
-  }
+    setQuantity(qty);
+  };
 
   const decreaseQty = () => {
-    const contador = document.querySelector('.count')
-    if (contador.valueAsNumber <= 1) return; 
+    const contador = document.querySelector(".count");
 
-    const qty = contador.valueAsNumber - 1  ;
-    setQuantity(qty)
+    if (contador.valueAsNumber <= 1) return;
 
-  }
+    const qty = contador.valueAsNumber - 1;
+    setQuantity(qty);
+  };
 
   const addToCart = () => {
-    dispatch(addItemToCart(id, quantity));
-    alert.success("Producto agregado al carrito");
+    dispatch(addItemToCart(params.id, quantity));
+    alert.success("Producto agregado al carro");
   };
+
+  function setUserRatings() {
+    const stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, index) => {
+      star.starValue = index + 1;
+
+      ["click", "mouseover", "mouseout"].forEach(function (e) {
+        star.addEventListener(e, showRatings);
+      });
+    });
+
+    function showRatings(e) {
+      stars.forEach((star, index) => {
+        if (e.type === "click") {
+          if (index < this.starValue) {
+            star.classList.add("orange");
+
+            setRating(this.starValue);
+          } else {
+            star.classList.remove("orange");
+          }
+        }
+
+        if (e.type === "mouseover") {
+          if (index < this.starValue) {
+            star.classList.add("yellow");
+          } else {
+            star.classList.remove("yellow");
+          }
+        }
+
+        if (e.type === "mouseout") {
+          star.classList.remove("yellow");
+        }
+      });
+    }
+  }
+  const reviewHandler = () => {
+    const formData = new FormData();
+
+    formData.set("rating", rating);
+    formData.set("comentario", comentario);
+    formData.set("idProducto", params.id);
+
+    dispatch(newReview(formData));
+  };
+
   return (
     <Fragment>
       {loading ? (
-        <h5>
-          Cargando...<i class="fa fa-cog fa-spin fa-3x fa-fw loading"></i>
-        </h5>
+        <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
       ) : (
         <Fragment>
           <MetaData title={product.nombre}></MetaData>
-          <div className="row d-flex justify-content-around mt-5">
-            <div
-              className="col-12 col-lg-5 border-warning"
-              id="imagen_producto"
-            >
+          <div className="row d-flex justify-content-around">
+            <div className="col-12 col-lg-5 img-fluid" id="imagen_producto">
               <Carousel pause="hover">
                 {product.imagen &&
                   product.imagen.map((img) => (
@@ -74,10 +141,11 @@ const ProductDetails = () => {
                   ))}
               </Carousel>
             </div>
-            <div className="col-12 col-lg-5">
+
+            <div className="col-12 col-lg-5 mt-5">
               <h3>{product.nombre}</h3>
               <p id="product_id">ID del Producto {product._id}</p>
-              <hr></hr>
+              <hr />
 
               <div className="rating-outer">
                 <div
@@ -85,30 +153,34 @@ const ProductDetails = () => {
                   style={{ width: `${(product.calificacion / 5) * 100}%` }}
                 ></div>
               </div>
-              <span id="no_de_opi niones">
+              <span id="No_de_reviews">
                 {" "}
-                ({product.numCalificacaiones}Reviews)
+                ({product.numCalificaciones} Reviews)
               </span>
-              <hr></hr>
+              <hr />
               <p id="precio_producto">${product.precio}</p>
               <div className="stockCounter d-inline">
-                <span className="btn btn-danger minus" onClick={decreaseQty}>-</span>
+                <span className="btn btn-danger minus" onClick={decreaseQty}>
+                  -
+                </span>
                 <input
                   type="number"
                   className="form-control count d-inline"
                   value={quantity}
                   readOnly
-                ></input>
-                <span className="btn btn-success plus" onClick={increaseQty}>+</span>
+                />
+                <span className="btn btn-primary plus" onClick={increaseQty}>
+                  +
+                </span>
               </div>
               <button
                 type="button"
-                id="carrito_btn"
-                className="btn btn-primary bg-warning ml-4"
+                id="cart_btn"
+                className="btn btn-primary d-inline ml-4"
                 disabled={product.inventario === 0}
                 onClick={addToCart}
               >
-                Agregar al carrito
+                Agregar al Carrito
               </button>
               <hr />
               <p>
@@ -120,25 +192,36 @@ const ProductDetails = () => {
                   {product.inventario > 0 ? "En existencia" : "Agotado"}
                 </span>
               </p>
-              <hr></hr>
+              <hr />
+              <p id="categoria">
+                Categoria: <strong>{product.categoria}</strong>
+              </p>
+              <hr />
               <h4 className="mt-2">Descripción:</h4>
               <p>{product.descripcion}</p>
               <hr />
-              <p id="genero">
-                Genero: <strong>{product.genero}</strong>
+              <p id="vendedor">
+                Vendido por: <strong>{product.vendedor}</strong>
               </p>
-              <button
-                id="btn-review"
-                type="button"
-                className="btn btn-primary mt-4 bg-warning"
-                data-toggle="modal"
-                data-target="#ratingModal"
-              >
-                Deja tu opinión
-                </button>
-                <div className='alert alert-danger mt-5' type='alert'>Inicia Sesión para dejar tu review</div>
 
-              {/*mesaje emergente para dejar opinion y calificacion}*/}
+              {user ? (
+                <button
+                  id="btn_review"
+                  type="button"
+                  className="btn btn-primary mt-4"
+                  data-toggle="modal"
+                  data-target="#ratingModal"
+                  onClick={setUserRatings}
+                >
+                  Deja tu Opinion
+                </button>
+              ) : (
+                <div className="alert alert-danger mt-5" type="alert">
+                  Inicia Sesión para dejar tu review
+                </div>
+              )}
+
+              {/*Mensaje emergente para dejar opinion y calificacion*/}
               <div className="row mt-2 mb-5">
                 <div className="rating w-50">
                   <div
@@ -159,13 +242,13 @@ const ProductDetails = () => {
                             type="button"
                             className="close"
                             data-dismiss="modal"
-                            aria-label="close"
+                            aria-label="Close"
                           >
-                            <span arial-hidden="true">&times;</span>
+                            <span aria-hidden="true">&times;</span>
                           </button>
                         </div>
-                        <div className="modal-body d-flex flex-column">
-                          <ul className="stars flex-wrap justify-content-center">
+                        <div className="modal-body">
+                          <ul className="stars">
                             <li className="star">
                               <i className="fa fa-star"></i>
                             </li>
@@ -186,13 +269,19 @@ const ProductDetails = () => {
                           <textarea
                             name="review"
                             id="review"
-                            className="form-control mt-5 mt-sm-2"
+                            className="form-control mt3"
+                            value={comentario}
+                            onChange={(e) => setComentario(e.target.value)}
                           ></textarea>
-                        </div>
-                        <div className="d-grid gap-2 d-flex justify-content-end">
-                          <button className="btn btn-primary bg-warning mx-3 mb-3" type="button">
+
+                          <button
+                            className="btn my-3 float-right review-btn px-4 text-white"
+                            onClick={reviewHandler}
+                            data-dismiss="modal"
+                            aria-label="Close"
+                          >
                             Enviar
-                          </button>                          
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -201,10 +290,11 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
+          {product.opiniones && product.opiniones.length > 0 && (
+            <ListReviews opiniones={product.opiniones} />
+          )}
         </Fragment>
       )}
     </Fragment>
   );
 };
-
-export default ProductDetails

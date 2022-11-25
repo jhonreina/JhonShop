@@ -39,21 +39,21 @@ function Sidebar() {
 
           {/*Botones de Ventas*/}
           <li>
-            <Link to="/">
+            <Link to="/orderList">
               <i className="fa fa-shopping-basket"></i>Ventas
             </Link>
           </li>
 
           {/*Botones de Usuarios*/}
           <li>
-            <Link to="/">
+            <Link to="/admin/users">
               <i className="fa fa-users"></i>Usuarios
             </Link>
           </li>
 
           {/*Botones de Opiniones*/}
           <li>
-            <Link to="/">
+            <Link to="/admin/reviews">
               <i className="fa fa-users"></i>Reviews
             </Link>
           </li>
